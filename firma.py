@@ -5,6 +5,7 @@ import io
 
 app = Flask(__name__)
 
+# Mensajes aleatorios
 messages = [
     "Your energy use has just spiked. You'd better be careful.",
     "Do you canoe?",
@@ -26,13 +27,25 @@ messages = [
 ]
 
 def generate_signature():
-    """Genera una imagen con un mensaje aleatorio."""
-    img = Image.new("RGB", (400, 100), color=(2, 3, 84))  # Fondo azul oscuro
+    """Genera una imagen con fondo azul, iconos y un mensaje aleatorio."""
+    
+    # Cargar imágenes
+    background_color = (2, 3, 84)  # Azul oscuro
+    img = Image.new("RGB", (400, 150), color=background_color)  # Tamaño ajustado para incluir los elementos
     draw = ImageDraw.Draw(img)
-
-    # Fuente (puedes usar una fuente TrueType en tu sistema)
+    
+    # Cargar las imágenes de iconos
     try:
-        font = ImageFont.truetype("arial.ttf", 20)
+        icon = Image.open("sims_face.png").resize((50, 50))  # Reemplazar con la ruta correcta
+        button = Image.open("sims_button.png").resize((100, 40))  # Reemplazar con la ruta correcta
+        img.paste(icon, (20, 50), icon)
+        img.paste(button, (250, 90), button)
+    except Exception as e:
+        print("Error cargando imágenes:", e)
+    
+    # Fuente (usar Arial o una fuente compatible)
+    try:
+        font = ImageFont.truetype("arial.ttf", 16)
     except:
         font = ImageFont.load_default()
 
@@ -40,7 +53,7 @@ def generate_signature():
     message = random.choice(messages)
 
     # Dibujar mensaje
-    draw.text((20, 40), message, fill="white", font=font)
+    draw.text((90, 60), message, fill="white", font=font)
 
     # Guardar la imagen en un buffer
     img_io = io.BytesIO()
