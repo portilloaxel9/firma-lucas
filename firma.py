@@ -14,7 +14,10 @@ messages = [
     "Your energy use has just spiked. You'd better be careful.",
     "Do you canoe?",
     "You have been chosen. They will come soon.",
-    "You're a (Spring, Summer, Autumn, Winter) and should decorate accordingly.",
+    "You're a Spring and should decorate accordingly.",
+    "You're a Summer and should decorate accordingly.",
+    "You're an Autumn and should decorate accordingly.",
+    "You're a Winter and should decorate accordingly.",
     "The number 3 is very important in your life right now.",
     "Your psychic advisor suggests that you work on improving relationships.",
     "Your psychic advisor has had very strong vibrations from your Seventh House.",
@@ -30,12 +33,42 @@ messages = [
     "We're fixing your phone line. Don't pick up the phone the next time it rings."
 ]
 
+def draw_text_with_wrap(draw, text, position, font, max_width):
+    """Dibuja texto con ajuste automático de línea y devuelve la altura total."""
+    words = text.split()
+    lines = []
+    current_line = ""
+
+    for word in words:
+        test_line = f"{current_line} {word}".strip()
+        text_width, _ = draw.textsize(test_line, font=font)
+
+        if text_width <= max_width:
+            current_line = test_line
+        else:
+            lines.append(current_line)
+            current_line = word
+
+    lines.append(current_line)
+    
+    x, y = position
+    total_height = 0
+    for line in lines:
+        draw.text((x, y), line, fill="white", font=font)
+        y += font.getsize(line)[1] + 2  # Espacio entre líneas
+        total_height += font.getsize(line)[1] + 2
+
+    return total_height
+
 def generate_signature():
     """Genera una imagen con fondo azul, iconos y un mensaje aleatorio."""
-
-    # Crear imagen con fondo azul
+    
+    # Configuración general
     background_color = (2, 3, 84)  # Azul oscuro
-    img = Image.new("RGB", (400, 150), color=background_color)
+    width, height = 400, 150  # Ajuste para mantener la proporción correcta
+    padding = 15  # Espaciado del contenedor
+
+    img = Image.new("RGB", (width, height), color=background_color)
     draw = ImageDraw.Draw(img)
 
     # Cargar imágenes de los íconos
@@ -43,12 +76,11 @@ def generate_signature():
         icon_path = os.path.join(STATIC_FOLDER, "face.png")
         button_path = os.path.join(STATIC_FOLDER, "phone.png")
 
-        icon = Image.open(icon_path).resize((60, 60))  # Ícono de la máscara
-        button = Image.open(button_path).resize((100, 40))  # Botón de teléfono
+        icon = Image.open(icon_path).resize((80, 80))  # Ajuste para mejor alineación
+        button = Image.open(button_path).resize((120, 40))  # Botón más ancho
 
-        # Pegamos las imágenes en la firma
-        img.paste(icon, (20, 40), icon)
-        img.paste(button, (250, 90), button)
+        # Pegamos la imagen del icono a la izquierda
+        img.paste(icon, (padding, (height - icon.height) // 2), icon)
 
     except Exception as e:
         print("Error cargando imágenes:", e)
@@ -62,9 +94,21 @@ def generate_signature():
     # Mensaje aleatorio
     message = random.choice(messages)
 
-    # Dibujar mensaje con estilo (centrado, en itálica)
-    text_x, text_y = 100, 50
-    draw.text((text_x, text_y), message, fill="white", font=font)
+    # Posición del texto (centrado entre el icono y el botón)
+    text_x = 110  # Ajuste para alinearlo con el icono
+    text_y = 40
+    max_text_width = 200  # El texto se ajusta a este ancho
+    text_height = draw_text_with_wrap(draw, message, (text_x, text_y), font, max_text_width)
+
+    # Ajustar la posición del botón para que quede centrado debajo del texto
+    button_x = (width - button.width) // 2  # Centrado horizontalmente
+    button_y = text_y + text_height + 8  # Se coloca debajo del texto con margen
+
+    # Pegamos la imagen del botón en su posición correcta
+    try:
+        img.paste(button, (button_x, button_y), button)
+    except Exception as e:
+        print("Error pegando el botón:", e)
 
     # Guardar imagen en un buffer
     img_io = io.BytesIO()
