@@ -34,14 +34,15 @@ messages = [
 ]
 
 def draw_text_with_wrap(draw, text, position, font, max_width):
-    """Dibuja texto con ajuste automático de línea y devuelve la altura total."""
+    """Dibuja texto con ajuste automático de línea usando textbbox()"""
     words = text.split()
     lines = []
     current_line = ""
 
     for word in words:
         test_line = f"{current_line} {word}".strip()
-        text_width, _ = draw.textsize(test_line, font=font)
+        text_bbox = draw.textbbox((0, 0), test_line, font=font)  # Calcula tamaño del texto
+        text_width = text_bbox[2] - text_bbox[0]  # Ancho del texto
 
         if text_width <= max_width:
             current_line = test_line
@@ -50,13 +51,14 @@ def draw_text_with_wrap(draw, text, position, font, max_width):
             current_line = word
 
     lines.append(current_line)
-    
+
     x, y = position
     total_height = 0
     for line in lines:
         draw.text((x, y), line, fill="white", font=font)
-        y += font.getsize(line)[1] + 2  # Espacio entre líneas
-        total_height += font.getsize(line)[1] + 2
+        line_height = draw.textbbox((0, 0), line, font=font)[3] - draw.textbbox((0, 0), line, font=font)[1]
+        y += line_height + 2  # Espaciado entre líneas
+        total_height += line_height + 2
 
     return total_height
 
