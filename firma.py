@@ -2,8 +2,12 @@ from flask import Flask, send_file
 from PIL import Image, ImageDraw, ImageFont
 import random
 import io
+import os
 
 app = Flask(__name__)
+
+# Ruta de la carpeta donde están las imágenes
+STATIC_FOLDER = "static"
 
 # Mensajes aleatorios
 messages = [
@@ -28,34 +32,41 @@ messages = [
 
 def generate_signature():
     """Genera una imagen con fondo azul, iconos y un mensaje aleatorio."""
-    
-    # Cargar imágenes
+
+    # Crear imagen con fondo azul
     background_color = (2, 3, 84)  # Azul oscuro
-    img = Image.new("RGB", (400, 150), color=background_color)  # Tamaño ajustado para incluir los elementos
+    img = Image.new("RGB", (400, 150), color=background_color)
     draw = ImageDraw.Draw(img)
-    
-    # Cargar las imágenes de iconos
+
+    # Cargar imágenes de los íconos
     try:
-        icon = Image.open("sims_face.png").resize((50, 50))  # Reemplazar con la ruta correcta
-        button = Image.open("sims_button.png").resize((100, 40))  # Reemplazar con la ruta correcta
-        img.paste(icon, (20, 50), icon)
+        icon_path = os.path.join(STATIC_FOLDER, "face.png")
+        button_path = os.path.join(STATIC_FOLDER, "phone.png")
+
+        icon = Image.open(icon_path).resize((60, 60))  # Ícono de la máscara
+        button = Image.open(button_path).resize((100, 40))  # Botón de teléfono
+
+        # Pegamos las imágenes en la firma
+        img.paste(icon, (20, 40), icon)
         img.paste(button, (250, 90), button)
+
     except Exception as e:
         print("Error cargando imágenes:", e)
-    
-    # Fuente (usar Arial o una fuente compatible)
+
+    # Fuente para el texto (Arial)
     try:
-        font = ImageFont.truetype("arial.ttf", 16)
+        font = ImageFont.truetype("arial.ttf", 18)
     except:
         font = ImageFont.load_default()
 
-    # Seleccionar mensaje aleatorio
+    # Mensaje aleatorio
     message = random.choice(messages)
 
-    # Dibujar mensaje
-    draw.text((90, 60), message, fill="white", font=font)
+    # Dibujar mensaje con estilo (centrado, en itálica)
+    text_x, text_y = 100, 50
+    draw.text((text_x, text_y), message, fill="white", font=font)
 
-    # Guardar la imagen en un buffer
+    # Guardar imagen en un buffer
     img_io = io.BytesIO()
     img.save(img_io, 'PNG')
     img_io.seek(0)
