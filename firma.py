@@ -78,11 +78,13 @@ def generate_signature():
         icon_path = os.path.join(STATIC_FOLDER, "face.png")
         button_path = os.path.join(STATIC_FOLDER, "phone.png")
 
-        icon = Image.open(icon_path).resize((80, 80))  # Ajuste para mejor alineación
-        button = Image.open(button_path).resize((120, 40))  # Botón más ancho
+        icon = Image.open(icon_path).resize((60, 60))  # Ajuste para mejor alineación
+        button = Image.open(button_path).resize((100, 35))  # Tamaño fijo del botón
 
-        # Pegamos la imagen del icono a la izquierda
-        img.paste(icon, (padding, (height - icon.height) // 2), icon)
+        # Pegamos la imagen del icono a la izquierda (centrado verticalmente)
+        icon_x = padding
+        icon_y = (height // 2 - icon.height // 2) - 10  # Se sube un poco para compensar el texto
+        img.paste(icon, (icon_x, icon_y), icon)
 
     except Exception as e:
         print("Error cargando imágenes:", e)
