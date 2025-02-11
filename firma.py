@@ -34,15 +34,15 @@ messages = [
 ]
 
 def draw_text_with_wrap(draw, text, position, font, max_width):
-    """Dibuja texto con ajuste automático de línea usando textbbox()"""
+    """Dibuja texto con ajuste automático de línea y devuelve la altura total."""
     words = text.split()
     lines = []
     current_line = ""
 
     for word in words:
         test_line = f"{current_line} {word}".strip()
-        text_bbox = draw.textbbox((0, 0), test_line, font=font)  # Calcula tamaño del texto
-        text_width = text_bbox[2] - text_bbox[0]  # Ancho del texto
+        text_bbox = draw.textbbox((0, 0), test_line, font=font)
+        text_width = text_bbox[2] - text_bbox[0]
 
         if text_width <= max_width:
             current_line = test_line
@@ -67,7 +67,7 @@ def generate_signature():
     
     # Configuración general
     background_color = (2, 3, 84)  # Azul oscuro
-    width, height = 400, 150  # Ajuste para mantener la proporción correcta
+    width, height = 400, 400  # Altura aumentada para incluir 10 cm de margen superior e inferior
     padding = 15  # Espaciado del contenedor
 
     img = Image.new("RGB", (width, height), color=background_color)
@@ -82,23 +82,23 @@ def generate_signature():
         button = Image.open(button_path).resize((120, 40))  # Botón más ancho
 
         # Pegamos la imagen del icono a la izquierda
-        img.paste(icon, (padding, (height - icon.height) // 2), icon)
+        img.paste(icon, (padding, (height // 2 - icon.height // 2)), icon)
 
     except Exception as e:
         print("Error cargando imágenes:", e)
 
-    # Fuente para el texto (Arial)
+    # Fuente para el texto (Comic Sans MS Italic)
     try:
-        font = ImageFont.truetype("arial.ttf", 18)
+        font = ImageFont.truetype("ComicSansMS-Italic.ttf", 18)
     except:
         font = ImageFont.load_default()
 
     # Mensaje aleatorio
     message = random.choice(messages)
 
-    # Posición del texto (centrado entre el icono y el botón)
-    text_x = 110  # Ajuste para alinearlo con el icono
-    text_y = 40
+    # Posición del texto (centrado entre el icono y el botón, con margen superior de 10 cm)
+    text_x = 110  
+    text_y = int((height - 200) / 2)  # Ajustar el texto con margen superior de 10 cm
     max_text_width = 200  # El texto se ajusta a este ancho
     text_height = draw_text_with_wrap(draw, message, (text_x, text_y), font, max_text_width)
 
