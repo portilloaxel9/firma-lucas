@@ -68,7 +68,7 @@ def generate_signature():
     # Configuración general
     background_color = (2, 3, 84)  # Azul oscuro
     width, height = 400, 150  # Ajuste para mantener la proporción correcta
-    padding = 15  # Espaciado del contenedor
+    padding = 8  # Espaciado del contenedor
 
     img = Image.new("RGB", (width, height), color=background_color)
     draw = ImageDraw.Draw(img)
@@ -78,13 +78,11 @@ def generate_signature():
         icon_path = os.path.join(STATIC_FOLDER, "face.png")
         button_path = os.path.join(STATIC_FOLDER, "phone.png")
 
-        icon = Image.open(icon_path).resize((60, 60))  # Ajuste para mejor alineación
-        button = Image.open(button_path).resize((100, 35))  # Tamaño fijo del botón
+        icon = Image.open(icon_path).resize((80, 80))  # Ajuste para mejor alineación
+        button = Image.open(button_path).resize((120, 40))  # Botón más ancho
 
-        # Pegamos la imagen del icono a la izquierda (centrado verticalmente)
-        icon_x = padding
-        icon_y = (height // 2 - icon.height // 2) - 10  # Se sube un poco para compensar el texto
-        img.paste(icon, (icon_x, icon_y), icon)
+        # Pegamos la imagen del icono a la izquierda
+        img.paste(icon, (padding, (height - icon.height) // 2), icon)
 
     except Exception as e:
         print("Error cargando imágenes:", e)
@@ -107,7 +105,7 @@ def generate_signature():
     # Ajustar la posición del botón para que quede centrado debajo del texto
     button_x = (width - button.width) // 2  # Centrado horizontalmente
     button_y = text_y + text_height + 10  # Se coloca debajo del texto con margen
-    button_y = 180
+    button_y = 100
 
     # Pegamos la imagen del botón en su posición correcta
     try:
