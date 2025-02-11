@@ -89,7 +89,7 @@ def generate_signature():
 
     try:
         font_path = os.path.join(STATIC_FOLDER, "ComicSansMS3.ttf")  # Ruta correcta
-        font = ImageFont.truetype(font_path, 16)  # Tamaño de la fuente
+        font = ImageFont.truetype(font_path, 14)  # Tamaño de la fuente
     except:
         font = ImageFont.load_default()
 
@@ -105,6 +105,7 @@ def generate_signature():
     # Ajustar la posición del botón para que quede centrado debajo del texto
     button_x = (width - button.width) // 2  # Centrado horizontalmente
     button_y = text_y + text_height + 10  # Se coloca debajo del texto con margen
+    button_y = 180
 
     # Pegamos la imagen del botón en su posición correcta
     try:
